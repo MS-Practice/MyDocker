@@ -26,3 +26,23 @@ docker run -e ACCEPT_EULA=Y -e SA_PASSWORD=YourPassword -p 1433:1433 --name sqls
 docker exec -it container-id bash	// 进入具体容器
 ```
 
+## Docker 继承 Jenkins
+
+```dockerfile
+docker run --name myjenkins -p 8080:8080 -p 50000:50000 -v /var/jenkins_home jenkins/jenkins
+// 上面在运行 jenkins 时要注意，一定要先在docker内部绑定到8080端口，然后映射到外部其他端口，否则启动之后会发生能访问 localhost:50000 而无法访问 8080 端口
+// 执行 command
+docker exec -it <container_name/ID>
+
+```
+
+注意，在 dockerhub 你查到的 jenkins 很有可能是一个已经废弃的仓库（废弃仓库名：jenkins）。你运行jenkins之后初始化插件发现会有很多装不上。这个时候你就要重新拉取新的仓库
+
+```
+docker pull jenkins/jenkins
+```
+
+
+
+https://github.com/jenkinsci/docker/issues/787
+
