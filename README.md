@@ -46,3 +46,128 @@ docker pull jenkins/jenkins
 
 https://github.com/jenkinsci/docker/issues/787
 
+
+
+# Docker 安装 CentOS
+
+docker hub 拉去镜像
+
+```shell
+docker pull centos:centos7
+```
+
+查看本地的镜像，然后找到拉取对应的 centos 版本运行
+
+```shell
+docker images
+docker run -itd --name centos-ms centos:centos7
+docker exec -it centos-ms /bin/bash
+```
+
+## 检查是否安装 ifconfig 和 ssh
+
+直接输入 ifconfig 和 ssh，如果显示不识别命令，则说明没有安装
+
+```
+yum search ifconfig
+yum install net-tools.x86_64
+```
+
+## 查看 ssh 服务
+
+```
+rpm -qa |grep sshd
+rpm -qa |grep ssh
+```
+
+如果没有列表信息弹出，说明要安装 ssh 服务
+
+```
+yum install -y openssh-server
+```
+
+## 启动 sshd
+
+```
+/usr/sbin/sshd -D &
+```
+
+如果发现报错，提示 ssh_host\_***_key 不存在，则需要添加对应的文件
+
+```
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_ecdsa_key
+ssh-keygen -t rsa -f /etc/ssh/ssh_host_ed25519_key
+```
+
+## 修改 sshd_config 
+
+```shell
+vi /etc/ssh/sshd_config
+# UsePAM yes 改为 UsePAM no 
+# UsePrivilegeSeparation sandbox 改为 UsePrivilegeSeparation no
+```
+
+然后重新启动sshd
+
+```
+/usr/sbin/sshd -D &
+```
+
+## 验证 sshd
+
+```
+ps -ef | grep sshd
+```
+
+## 修改ssh连接密码
+
+```
+passwd root
+```
+
+
+
+## 安装 lsof
+
+```
+yum -y install lsof
+lsof -i:22
+```
+
+## 添加启动程序
+
+```
+vi run.sh
+```
+
+然后添加如下脚本内容
+
+```
+#/bin/bash
+/usr/sbin/sshd -D &
+```
+
+修改脚本执行权限
+
+```
+chmod 755 run.sh
+exit #退出
+```
+
+## 提交前面作出的修改
+
+```
+docker commit 容器id sshd_centos
+docker run -p 10022:22 -d sshd_centos /usr/sbin/sshd –D
+```
+
+最后用 ssh 工具连接本机ip+端口号连接即可
+
+## 参考连接
+
+https://www.pianshen.com/article/827378623/
+
+https://www.cnblogs.com/whutxldwhj/p/6427530.html
+
+https://www.runoob.com/docker/docker-install-centos.html
