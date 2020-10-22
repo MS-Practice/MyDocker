@@ -164,6 +164,30 @@ docker run -p 10022:22 -d sshd_centos /usr/sbin/sshd –D
 
 最后用 ssh 工具连接本机ip+端口号连接即可
 
+## 推送自己的镜像
+
+1. 首先将镜像名 tag 为 dockerhub 的账户名，假设我现在的镜像名为 ms_docker_demo，那么
+
+   ```shell
+   docker tag ms_docker_demo marsonshine/ms_docker_demo
+   ```
+
+2. 登录
+
+   ```
+   docker login
+   ```
+
+3. 推送
+
+   ```
+   docker push marsonshine/ms_docker_demo
+   ```
+
+   
+
+
+
 ## 参考连接
 
 https://www.pianshen.com/article/827378623/
