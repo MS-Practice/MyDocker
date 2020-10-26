@@ -164,6 +164,18 @@ docker run -p 10022:22 -d sshd_centos /usr/sbin/sshd –D
 
 最后用 ssh 工具连接本机ip+端口号连接即可
 
+## Mac 电脑下连接 Docker 中的 CentOS
+
+在做好上面的步骤之后，可以用 Mac 自带的终端来连接 CentOS
+
+"终端" -> "新建命令"，然后输入如下命令
+
+```shell
+ssh -p 10022 root@192.168.0.103
+```
+
+注意！mac 下的终端在连接服务器时，每次都会循环密码。
+
 ## 推送自己的镜像
 
 1. 首先将镜像名 tag 为 dockerhub 的账户名，假设我现在的镜像名为 ms_docker_demo，那么
