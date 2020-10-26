@@ -184,7 +184,20 @@ docker run -p 10022:22 -d sshd_centos /usr/sbin/sshd –D
    docker push marsonshine/ms_docker_demo
    ```
 
-   
+
+# Docker 中的容器启用代理
+
+如果是通过 docker 运行的服务器，如 CentOS，那么我们在安装某些软件的时候，下载速度非常慢，这个时候我们可以使用代理，具体方法在 `/etc/yum.conf` 添加如下结点
+
+```shell
+proxy=http://127.0.0.1:7777
+```
+
+但是这里有个问题，因为 docker 内部是无法访问 `http://127.0.0.1` 这个ip，它会报 `Connection refuse` ，解决方案也是有的，将 `http://127.0.0.1` 改成 `host.docker.internal` 即可
+
+```shell
+proxy=host.docker.internal:7777
+```
 
 
 
