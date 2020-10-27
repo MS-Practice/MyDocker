@@ -211,6 +211,47 @@ proxy=http://127.0.0.1:7777
 proxy=host.docker.internal:7777
 ```
 
+# 关于 Docker 端口映射问题
+
+先将我目前的需求：
+
+1. 我在 docker 拉取了一个centos镜像并启动 docker run -dit sshd_centos /bin/bash
+2. 我的想法是在把 1 启动的centos作为一个虚拟服务器，我要布署多个 app，比如我在centos中安装并运行了consul，在容器内部运行为 localhost:8500，那么问题是我该如何做到在我本机访问这个docker中的centos中的8500端口？
+
+当我直接启动一个 ip 时
+
+```shell
+docker run -p 10022:22 -d sshd_centos /usr/sbin/sshd –D
+```
+
+如果我通过 ssh 远程连接 centos，安装并运行
+
+```shell
+ssh -p 10022 root@192.168.3.67
+consul agent -dev -config-dir=./consul.d
+```
+
+consul 运行之后会服务器内部暴露一个 8500 端口的 ui 界面，但是这个容器由于已经在运行的时候进行了一个端口映射：本地 10022 端口映射容器内部 22 端口。所以在本机是无法以 `192.168.3.67:8500` 访问 ui 界面的。
+
+后经同事提醒，docker 本就推荐一次成型，在运行之后就不要做改动。所以我就没有尝试继续下去，转而直接 commit 正在运行的容器，然后再次运行并指定 8500 端口。
+
+```shell
+docker commit 95527e8116d6 marsonshine/consul_demo
+docker run -d -p 8500:8500 marsonshine/consul_demo
+```
+
+运行之后点击浏览器访问发现还是无法访问，这是因为运行的容器还没有启动 consul，之前启动 consul 是在第一个容器中启动的，这是一个新容器，需要进去容器运行，有两种方法：
+
+```shell
+# 方法1：直接进入 consul 宿主环境，也就是 centos
+# 然后启动 consul
+docker exec -it clever_poitras /bin/bash
+consul agent -dev -config-dir=./etc/consul.d 
+
+# 方法2：直接运行 consul 启动命令脚本
+docker exec -it clever_poitras /bin/consul agent -dev -config-dir=./etc/consul.d
+```
+
 
 
 ## 参考连接
