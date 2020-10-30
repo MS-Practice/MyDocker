@@ -252,7 +252,76 @@ consul agent -dev -config-dir=./etc/consul.d
 docker exec -it clever_poitras /bin/consul agent -dev -config-dir=./etc/consul.d
 ```
 
+# Docker 安装运行 Kafka
 
+运行 Kafka 之前先要安装 Zookeeper
+
+```shell
+docker pull wurstmeister/zookeeper
+```
+
+拉取 kafka
+
+```
+docker pull wurstmeister/kafka
+```
+
+运行 Zookeeper
+
+```
+docker run -d zookeeper -p 2181:2181 -t wurstmeister/zookeeper
+```
+
+启动 Kafka
+
+```
+docker run -d --name kafka -p 9092:9092 -e KAFKA_BROKER_ID=0 -e KAFKA_ZOOKEEPER_CONNECT=192.168.3.67:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://192.168.3.67:9092 -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 -t wurstmeister/kafka
+# 其中的 192.168.3.67 是你的本地局域网 IP
+```
+
+进入 kafka 容器内部操作命令
+
+```
+docker exec -it kafka /bin/bash
+```
+
+进入 kafka 的命令所在目录
+
+```
+cd opt/kafka_version_id	# 我的版本号是 kafka_2.13-2.6.0
+```
+
+创建 kafka topic
+
+```
+./bin/kafka-topics.sh --create --zookeeper 192.168.3.67:2181 --replication-factor 1 --partition 1 --topic mykafka
+```
+
+查看服务器所有的 topic 集合
+
+```
+./bin/kafka-topics.sh --list --bootstrap-server 192.168.3.67:9092
+```
+
+查看指定 topic 详情
+
+```
+./bin/kafka-topics.sh --bootstrap-server 192.168.3.67:9092 --describe --topic mykafka
+```
+
+创建生产者
+
+```
+./bin/kafka-console-producer.sh --broker-list 192.168.3.67:9092 --topic mykafka
+```
+
+另开一个 cmd 窗口创建消费者
+
+```
+./bin/kafka-console-consumer.sh --zookeeper 192.168.3.67:2181 --topic mykafka
+```
+
+在生产者输入消息之后会在消费者窗口输出。
 
 ## 参考连接
 
