@@ -196,7 +196,14 @@ ssh -p 10022 root@192.168.0.103
    docker push marsonshine/ms_docker_demo
    ```
 
-   
+
+# Docker 安装 Mysql
+
+```
+docker pull mysql	# 下载 mysql 镜像
+docker run -itd --name ms-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 mysql	# 运行容器，设置 mysql 密码
+docker exec -it mysql bash	# 运行 mysql bash 进入 mysql 容器内部
+```
 
 
 
