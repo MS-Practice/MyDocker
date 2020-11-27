@@ -259,6 +259,16 @@ consul agent -dev -config-dir=./etc/consul.d
 docker exec -it clever_poitras /bin/consul agent -dev -config-dir=./etc/consul.d
 ```
 
+# Docker 安装运行 Rabbitmq
+
+docker 镜像地址：https://hub.docker.com/_/rabbitmq
+
+```cmd
+docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management
+```
+
+
+
 # Docker 安装运行 Kafka
 
 运行 Kafka 之前先要安装 Zookeeper
