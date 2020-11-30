@@ -308,7 +308,13 @@ rabbitmqctl start_app
 
 注意，rabbitmq 集群分为两种，一种是普通集群，只有两个节点。
 
-还有一种高可用的镜像集群
+还有一种高可用的镜像集群，只要开启一下命令即可快速进入镜像集群模式：
+
+```bash
+docker exec my-rabbit1 rabbitmqctl set_policy ha "." '{"ha-mode":"all"}'
+```
+
+
 
 # Docker 安装运行 Kafka
 
