@@ -267,7 +267,44 @@ docker 镜像地址：https://hub.docker.com/_/rabbitmq
 docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management
 ```
 
+## RabbitMQ 集群搭建
 
+```bash
+docker run -d --hostname rabbit1 --name my-rabbit1 -p 15672:15672 -p 5672:5672 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+
+# 将rabbit2节点加入到 rabbit1 集群中
+docker run -d --hostname rabbit2 --name my-rabbit2 -p 15673:15672 -p 5673:5672 --link my-rabbit1:rabbit1 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+
+# 将rabbit3节点加入到 rabbit1 集群中
+docker run -d --hostname rabbit3 --name my-rabbit3 -p 15674:15672 -p 5674:5672 --link my-rabbit1:rabbit1 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
+
+## 注意，在最新版 3.8.9 中，`-e RABBITMQ_ERLANG_COOKIE`已经过时，请用 `--erlang-cookie` 替换
+```
+
+注意，设置集群时，命令行中的 `--link` 是必不可少的，而集群中必须要使用相同的 cookie，所以命令行中的 cookie 设置也是必须的。
+
+```bash
+docker exec -it my-rabbit1 bash
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl start_app
+
+docker exec -it my-rabbit2 bash
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl join_cluster rabbit@rabbit1
+rabbitmqctl start_app
+
+docker exec -it my-rabbit3 bash
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl join_cluster rabbit@rabbit1
+rabbitmqctl start_app
+```
+
+注意，rabbitmq 集群分为两种，一种是普通集群，只有两个节点。
+
+还有一种高可用的镜像集群
 
 # Docker 安装运行 Kafka
 
