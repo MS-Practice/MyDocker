@@ -377,6 +377,16 @@ cd opt/kafka_version_id	# 我的版本号是 kafka_2.13-2.6.0
 
 在生产者输入消息之后会在消费者窗口输出。
 
+# Docker 安装 ELK
+
+```powershell
+docker pull sebp/elk
+
+docker run -dit --name elk -p 5601:5601 -p 9200:9200 -p 5044:5044 sebp/elk
+```
+
+
+
 ## 参考连接
 
 https://www.pianshen.com/article/827378623/
