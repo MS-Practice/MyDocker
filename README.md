@@ -279,6 +279,10 @@ docker run -d --hostname rabbit2 --name my-rabbit2 -p 15673:15672 -p 5673:5672 -
 docker run -d --hostname rabbit3 --name my-rabbit3 -p 15674:15672 -p 5674:5672 --link my-rabbit1:rabbit1 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management
 
 ## 注意，在最新版 3.8.9 中，`-e RABBITMQ_ERLANG_COOKIE`已经过时，请用 `--erlang-cookie` 替换
+
+# 上面的设置在我的本地有异常，两个节点可以连接成功，但是最后一个连接不上，报 rabbit2 节点与 rabbit3 节点无法连接
+# 所以我将第三个节点启动节点改成如下形式
+docker run -d --hostname rabbit3 --name my-rabbit3 -p 15674:15672 -p 5674:5672 --link my-rabbit1:rabbit1 --link my-rabbit2:rabbit2 -e RABBITMQ_ERLANG_COOKIE='rabbitcookie' rabbitmq:3-management;
 ```
 
 注意，设置集群时，命令行中的 `--link` 是必不可少的，而集群中必须要使用相同的 cookie，所以命令行中的 cookie 设置也是必须的。
@@ -304,7 +308,13 @@ rabbitmqctl start_app
 
 注意，rabbitmq 集群分为两种，一种是普通集群，只有两个节点。
 
-还有一种高可用的镜像集群
+还有一种高可用的镜像集群，只要开启一下命令即可快速进入镜像集群模式：
+
+```bash
+docker exec my-rabbit1 rabbitmqctl set_policy ha "." '{"ha-mode":"all"}'
+```
+
+
 
 # Docker 安装运行 Kafka
 
