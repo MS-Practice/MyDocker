@@ -393,6 +393,11 @@ cd opt/kafka_version_id	# 我的版本号是 kafka_2.13-2.6.0
 docker pull sebp/elk
 
 docker run -dit --name elk -p 5601:5601 -p 9200:9200 -p 5044:5044 sebp/elk
+
+# 还有一种方式，引用 docker-elk 地址：https://github.com/deviantony/docker-elk
+git clone https://github.com/deviantony/docker-elk | cd docker-elk
+docker-compose up
+# 在下载并生成容器时会提示访问路径权限，点击同意即可
 ```
 
 
