@@ -15,6 +15,8 @@ docker rm $(docker ps -a -q)	// 删除所有容器
 docker inspect container-id	// 查看指定容器详细信息
 ```
 
+nuget 相关命令见：https://docs.microsoft.com/zh-cn/dotnet/core/tools/dotnet-nuget-push
+
 
 
 ## Docker 连接 MSSQL
@@ -402,7 +404,19 @@ docker-compose up
 
 
 
-## 参考连接
+# Docker 安装 nuget server
+
+```powershell
+docker pull sunside/simple-nuget-server
+docker run --detach=true --publish 5000:80 --env NUGET_API_KEY=marsonshine --volume /srv/docker/nuget/database:/var/www/db --volume /srv/docker/nuget/packages:/var/www/packagefiles --name nuget-server sunside/simple-nuget-server
+
+-- 推送nuget源
+dotnet nuget push .\BBSS.Platform.Office.1.2.3.nupkg -k marsonshine -s http://localhost:5000/
+```
+
+
+
+# 参考连接
 
 https://www.pianshen.com/article/827378623/
 
