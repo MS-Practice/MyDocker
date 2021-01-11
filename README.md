@@ -402,7 +402,58 @@ docker-compose up
 # 在下载并生成容器时会提示访问路径权限，点击同意即可
 ```
 
+## LogStash 提取自定义字段
 
+formart 示例：
+
+```ini
+node=${nodeName}#time=${longdate}#env=${aspnet-environment}#host=${aspnet-request-host}#url=${aspnet-request-url}#method=${aspnet-request-method}#level=${uppercase:${level}}#caller=${callsite}#linenumber=${callsite-linenumber}#msg=${message}#exception=${exception:format=ToString}#requestId=${requestId}#userflag=${userflag}#platformId=${platformId}#duration=${aspnet-request-duration}
+```
+
+logstash.conf
+
+```yaml
+input {
+        beats {
+                port => 5044
+        }
+
+        tcp {
+                port => 5000
+        }
+}
+filter {
+        ruby {
+                code => "
+                        array1 = event.get('message').split('#')
+                        array1.each do |temp1|
+                                if temp1.nil? then
+                                        next
+                                end
+                                array2 = temp1.split('=')
+                                key = array2[0]
+                                value = array2[1]
+                                if key.nil? then
+                                        next
+                                end
+                                event.set(key, value)
+                        end
+                "
+                remove_field => [ "message" ]
+        }
+}
+## Add your filters / logstash plugins configuration here
+output {
+        elasticsearch {
+                hosts => "elasticsearch:9200"
+                user => "elastic"
+                password => "changeme"
+                ecs_compatibility => disabled
+        }
+}
+```
+
+> 注意，直接执行 docker-conpose up 运行之后这个无法改动 logstash.conf 文件，需要更改 docker-compose.yml 文件，将 logstash 容器下对应的 volumes:read_only 设置为 false，再执行即可更改配置文件。
 
 # Docker 安装 nuget server
 
